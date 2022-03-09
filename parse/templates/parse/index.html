@@ -9,8 +9,6 @@
 <div style="color: red;">Error: {{error}}</div>
 {% endif %}
 
-<ul>
-{% for link in links %}
-    <li><a href="{{link}}">{{ link }}</a></li>
-{% endfor %}
-</ul>
+{% with links=links template="parse/tree_view.html" %}
+    {% include template %}
+{% endwith %}

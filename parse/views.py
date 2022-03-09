@@ -20,25 +20,33 @@ def index(request):
     try:
         validate(url)
         if url:
-            links = []
-            # parse the webpage
-            domain = urlparse(url).netloc
-            scheme = urlparse(url).scheme
-            html_page = urllib.request.urlopen(url)
-            soup = BeautifulSoup(html_page, "html.parser")
-            for link in soup.findAll('a'):
-                href = link.get('href')
-                if href is not None:
-                    if href.startswith('/'):
-                        href = f'{scheme}://{domain}{href}'
-                    if href.startswith('#'):
-                        href = url+href
-                    links.append(href)
-            context['links'] = links
+            context['links'] = get_links(url, 2)
 
     except ValidationError as e:
         context['error'] = 'URL is not valid' 
-    except HTTPError as e:
-        context['error'] = 'Page not found' 
 
     return render(request, 'parse/index.html', context)
+
+
+def get_links(url, max_level=4):
+    if max_level == 0:
+        return dict() 
+    
+    domain = urlparse(url).netloc
+    scheme = urlparse(url).scheme
+    try:
+        html_page = urllib.request.urlopen(url)
+    except HTTPError as e:
+        # skip the page
+        return dict() 
+    soup = BeautifulSoup(html_page, "html.parser")
+    links = dict()
+    for link in soup.findAll('a'):
+        href = link.get('href')
+        if href is not None:
+            if href.startswith('/'):
+                href = f'{scheme}://{domain}{href}'
+            if href.startswith('#'):
+                href = url+href
+            links[href] = get_links(href, max_level=max_level-1)
+    return links

@@ -1,0 +1,8 @@
+<ul> 
+    {% for link, value in links.items %}
+        <li>
+            <a href="{{link}}">{{ link }}</a>
+            {% include "parse/tree_view.html" with links=value %}
+        </li>
+    {% endfor %}
+</ul>
