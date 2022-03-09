@@ -1,0 +1,16 @@
+<form action="/?url={{url}}" method="get">
+    <fieldset>
+        <label for="url-input">Webpage</label><br>
+        <input type="url" name="url" id="url-input" value="{{url}}" style="width: 100%;">
+    </fieldset>
+    <input type="submit" value="Go" >
+</form>
+{% if error %}
+<div style="color: red;">Error: {{error}}</div>
+{% endif %}
+
+<ul>
+{% for link in links %}
+    <li><a href="{{link}}">{{ link }}</a></li>
+{% endfor %}
+</ul>
